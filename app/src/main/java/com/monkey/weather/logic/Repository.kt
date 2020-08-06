@@ -1,6 +1,7 @@
 package com.monkey.weather.logic
 
 import androidx.lifecycle.liveData
+import com.monkey.weather.logic.dao.PlaceDao
 import com.monkey.weather.logic.model.Place
 import com.monkey.weather.logic.model.Weather
 import com.monkey.weather.logic.network.WeatherNetwork
@@ -66,5 +67,9 @@ object Repository {
             }
             emit(result)
         }
+
+    fun savePlace(p: Place) = PlaceDao.save(p)
+    fun getPlace() = PlaceDao.get()
+    fun isPlaceSaved() = PlaceDao.isPlaceSaved()
 
 }

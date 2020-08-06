@@ -1,5 +1,6 @@
 package com.monkey.weather.ui.place
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,7 +11,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.monkey.weather.MainActivity
 import com.monkey.weather.R
+import com.monkey.weather.ui.weather.WeatherActivity
 import kotlinx.android.synthetic.main.fragment_place.*
 
 class PlaceFragment : Fragment() {
@@ -31,6 +34,19 @@ class PlaceFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
+        if (activity is MainActivity && viewModel.isPlaceSaved()) {
+            val p = viewModel.getPlace()
+            val intent = Intent(activity, WeatherActivity::class.java).apply {
+                putExtra("lng", p.location.lng)
+                putExtra("lat", p.location.lat)
+                putExtra("place", p.name)
+            }
+            startActivity(intent)
+            activity?.finish()
+            return
+        }
+
         rv.layoutManager = LinearLayoutManager(activity)
         adapter = PlaceAdapter(this, viewModel.placeList)
         rv.adapter = adapter

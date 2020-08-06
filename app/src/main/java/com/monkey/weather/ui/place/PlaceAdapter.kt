@@ -10,8 +10,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.monkey.weather.R
 import com.monkey.weather.logic.model.Place
 import com.monkey.weather.ui.weather.WeatherActivity
+import kotlinx.android.synthetic.main.activity_weather.*
 
-class PlaceAdapter(private val fragment: Fragment, private val list: List<Place>) :
+class PlaceAdapter(private val fragment: PlaceFragment, private val list: List<Place>) :
     RecyclerView.Adapter<PlaceAdapter.ViewHolder>() {
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -24,12 +25,23 @@ class PlaceAdapter(private val fragment: Fragment, private val list: List<Place>
         val holder = ViewHolder(view)
         holder.itemView.setOnClickListener {
             val p = list[holder.absoluteAdapterPosition]
-            val intent = Intent(parent.context, WeatherActivity::class.java).apply {
-                putExtra("lng", p.location.lng)
-                putExtra("lat", p.location.lat)
-                putExtra("place", p.name)
+            val activity = fragment.activity
+            if (activity is WeatherActivity) {
+                activity.drawerLayout.closeDrawers()
+                activity.viewModel.lng = p.location.lng
+                activity.viewModel.lat = p.location.lat
+                activity.viewModel.place = p.name
+                activity.refresh()
+            } else {
+                val intent = Intent(parent.context, WeatherActivity::class.java).apply {
+                    putExtra("lng", p.location.lng)
+                    putExtra("lat", p.location.lat)
+                    putExtra("place", p.name)
+                }
+                fragment.startActivity(intent)
+                activity?.finish()
             }
-            fragment.startActivity(intent)
+            fragment.viewModel.savePlace(p)
         }
         return holder
     }
